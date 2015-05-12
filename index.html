@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href='http://fonts.googleapis.com/css?family=Squada+One' rel='stylesheet' type='text/css'>
+<style>
+
+  html {
+      height: 100%;
+  }
+  body {
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      font-family: 'Squada One', cursive;
+      font-size: 1.5em;
+      color: white;
+      /* height: 100%; */
+      /*margin: 10px; */
+  
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-image: -webkit-radial-gradient(#003A7B, #1C2D41);
+      background-image: -moz-radial-gradient(#003A7B, #1C2D41);
+      background-image: -o-radial-gradient(#003A7B, #1C2D41);
+      background-image: radial-gradient(#003A7B, #1C2D41);
+  
+      background-image: radial-gradient(#003A7B, #1C2D41);
+  
+  }
+  
+  a {
+     text-decoration: none;
+     color: yellow;
+   }
+ 
+  .centerMessage {
+     color: white; 
+     font-size: 24px; 
+     position: absolute; 
+     top: 45%; 
+     right: 45%; 
+  }
+ 
+  #browserStatuses {
+   padding-left: 50px;
+  }
+
+  #browserStatuses ul {
+    padding-left: 100px;
+  }
+
+  .hi {
+     /* background-color: #626200; */
+     background-color: yellow;
+     color: gray;
+  }
+</style>
+
+  <!-- General app includes -->
+  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+
+  <script type="text/javascript">
+    $( document ).ready(function() {
+
+  	$("#dunit_info").click(function() {
+           var DUnitInfo = $("#DUnitInfo").html(); 
+           var currentData = $("#browserStatuses").html(); 
+           if(!currentData.match(/\S/)){
+             $("#browserStatuses").html(DUnitInfo); 
+           }else{
+             $("#browserStatuses").html(""); 
+           }
+        }); 
+
+
+  	$("#headless").click(function() {
+            var r = confirm("This will headlessly spawn all of your local browsers:");
+            if (r == true) {
+              $.post('/multi_browser_dom_test', {"headless":"true"}, function(){  checkBrowsers();  }); 
+              //checkBrowsers();
+              return false;
+            }else{
+              return false;
+            }
+        }); 
+
+  	$("#nonheadless").click(function() {
+            var r = confirm("This will spawn all of your local browsers:");
+            if (r == true) {
+              $.post('/multi_browser_dom_test', {"headless":"false"}, function(){  checkBrowsers();  }); 
+              //checkBrowsers();
+              return false;
+            }else{
+              return false;
+            }
+        }); 
+
+        function checkBrowsers(){
+
+             setTimeout(function(){
+
+                 $.ajax({
+                   type: "GET",
+                   url: "/check_browser",
+                   data: {},
+                   success: function(data, status, xhr){ 
+
+                      var runnerStatus = data[0]["status"];
+
+                      var jsonString = JSON.stringify(data);
+                      jsonString = '<br>'+jsonString;
+                      jsonString = jsonString.replace(/,/g, ",<br>");
+                      $("#browserStatuses").html(jsonString);
+                      
+                      if(!runnerStatus || runnerStatus.match(/running/i)){ 
+                        checkBrowsers();
+                      }else{
+                        setTimeout(function(){ $("#browserStatuses").html("");  },1000);
+                      }
+                   },
+                   dataType: 'json'
+                 });
+
+             }, 1000);          
+        }
+
+    });
+
+
+
+
+  </script>
+
+</head>
+<body>
+
+     <h1>Welcome to SeleniGone</h1>
+     
+      <ul>
+        <li>Your <a href="app">app</a></li>
+        <li>Your <a href="DOMTest">app</a> including <a href="#" id=dunit_info>DUnit</a></li>
+        <li>Spawn your testing <a href="#" id=headless>headlessly</a> or 
+                               <a href="#" id=nonheadless>nonheadlessly</a></li>
+        <li>See resulting browser <a href="DOMTest/images">Snapsots</a></li>
+      <ul>
+
+      <br>
+      <pre><span id=browserStatuses></span></pre>
+
+
+<div id=DUnitInfo style="display:none;">
+
+  Of course its not a unit test. But the name is cool.
+  DUnit allows you to write DOM tests in pure jQuery.
+  It allows for Selenium-like usage, But extends that to AJAX. 
+
+     DUnit.<span class=hi>waitFor</span>(jquerySelector, matchPattern, timeout, callback)
+       <ul><li>Just like a Selenium wait</li></ul>
+
+     DUnit.<span class=hi>waitForAjax</span>(endpointName, timeout, callback)
+       <ul> 
+         <li>Better than a dumb Selenium wait</li>
+         <li>Allows introspection to ensure POST bodies!</li>
+      </ul>
+
+     DUnit.<span class=hi>task</span>(function, postTaskDelay)
+       <ul><li>Do something</li></ul>
+
+     DUnit.<span class=hi>test</span>(testFunction, testName)
+       <ul><li>A test</li></ul>
+
+     DUnit.<span class=hi>pause</span>(delay);
+       <ul><li>More Selemulation.  Yawn.</li></ul>
+
+     DUnit.<span class=hi>takeScreenshot</span>(filename);
+       <ul><li>Always a crowd pleaser.</li></ul>
+
+</div>
+
+</body>
+</html

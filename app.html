@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+  <!-- General app includes -->
+  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+
+
+  <!-- This is some fake app javascript -->
+  <script type="text/javascript">
+    $( document ).ready(function() {
+
+        function copyValue(){
+          var value = $("#data").val();
+          $("#code_name").html( value );
+        }
+
+        $("#button").on("click", function(){copyValue()});
+
+        $("#ajaxButton").on("click", function(){
+            $("#ajaxResults").html("...loading...");
+
+            $.ajax({
+              type: "POST",
+              url: "/ajax_test",
+              data: {"something":"bogus"},
+              success: function(data, status, xhr){ $("#ajaxResults").html(JSON.stringify({"ajax":status})); },
+              dataType: 'json'
+            });
+        });
+
+        setTimeout(function(){ $("#status").html("Ready")},500);
+        setTimeout(function(){ $("#status").html("Set")},1500);
+        setTimeout(function(){ $("#status").html("Go!")},2500);
+    });
+  </script>
+
+
+  <!-- Here is where we would condtionally load in the test JS -->
+  <script type="text/javascript">
+    $( document ).ready(function() {
+       if(window.location.pathname.match(/DOMTest/)){
+           $.getScript("DOMTest/DUnit.js").done(function() {
+              $.getScript("DOMTest/app_dom_tests.js");
+           });
+       }
+    });
+  </script>
+
+</head>
+
+
+<body style="background-color:white">
+
+  <h1>Welcome to DOM testing: <span id=status></span></h1>
+
+  <input type="text" name="data" id="data" value="foo"/>
+
+  <input type="button" name="button" id="button" value="button"/>
+
+  <br><br>
+  Your Submitted Value: <span id="code_name"></span><br>
+  <br>
+
+  <input type="button" name="ajaxButton" id="ajaxButton" value="ajaxButton"/><br>
+
+  <span id=ajaxResults></span>
+
+</body>
+</html>

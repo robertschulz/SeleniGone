@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href='http://fonts.googleapis.com/css?family=Squada+One' rel='stylesheet' type='text/css'>
+<style>
+
+  html {
+      height: 100%;
+  }
+  body {
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      font-family: 'Squada One', cursive;
+      font-size: 1.5em;
+      color: white;
+      /* height: 100%; */
+      /*margin: 10px; */
+  
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-image: -webkit-radial-gradient(#003A7B, #1C2D41);
+      background-image: -moz-radial-gradient(#003A7B, #1C2D41);
+      background-image: -o-radial-gradient(#003A7B, #1C2D41);
+      background-image: radial-gradient(#003A7B, #1C2D41);
+  
+      background-image: radial-gradient(#003A7B, #1C2D41);
+  }
+
+ .centerMessage {
+    color: white; 
+    font-size: 24px; 
+    position: absolute; 
+    top: 45%; 
+    right: 45%; 
+ }
+
+ .imgNode {
+    /* font-weight:bold; */
+    float:left;
+    padding-right:15px
+ }
+
+</style>
+
+  <!-- General app includes -->
+  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+
+  <!-- This is some fake app javascript -->
+  <script type="text/javascript">
+    $( document ).ready(function() {
+
+            $.ajax({
+              type: "GET",
+              url: "/get_snapshots",
+              data: {"something":"bogus"},
+              success: function(data, status, xhr){ 
+
+                  if(data.snapshots.length === 0){
+                     $("#ajaxResults").addClass("centerMessage"); 
+                     $("#ajaxResults").html("No Snapshots Yet..."); 
+                  }else{
+		     //$("#ajaxResults").html(JSON.stringify(data));
+                     $("#ajaxResults").removeClass("centerMessage");
+                     $.each(data.snapshots, function(index, value){
+                          //alert(value);
+                          var imageName = value.replace("images/", ""); 
+                          var image = document.createElement("img");
+                          image.src = value;
+                          image.setAttribute('width', '400px');
+
+                          var a = document.createElement('a');
+                          a.href = value;
+                          a.appendChild(image);
+
+                          var span = document.createElement('span');
+                          span.className = 'imgNode';
+                          //span.style.cssText = 'font-weight:bold;float:left;padding-right:15px';
+
+                          var br = document.createElement('br');
+
+                          var text = document.createTextNode(imageName);
+                          span.appendChild(text);
+                          span.appendChild(br);
+                          span.appendChild(a);
+
+                          $("#ajaxResults").append(span);
+
+                          //$("#ajaxResults").append("<span style='color:white'>"+imageName+"</span>");
+                          //$("#ajaxResults").append("<br>");
+                          //$("#ajaxResults").append(a);
+                          //$("#ajaxResults").append("<br>");
+                     });
+                  }
+              },
+              dataType: 'json'
+            });
+
+    });
+  </script>
+
+</head>
+<!--
+<body style="background:-webkit-gradient(radial, 196 82, 206, 1000 315, 515, from(#00008D), to(#0000FF))">
+<body style="background:-webkit-gradient(radial, -21 11, 223, 1000 315, 523, from(#00007A), to(#00939A))">
+<body style="background:-webkit-gradient(linear, 88% 100%, 24% 22%, from(#0000CC), to(#09095C))">
+-->
+<body>
+
+      <span id=ajaxResults></span>      
+
+</body>
+</html
