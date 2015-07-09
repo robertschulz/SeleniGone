@@ -24,7 +24,6 @@
 
     // Wait for page to be fully "ready"
     DUnit.waitFor(jQuery("#status"), /Go/, 5000, function(selector){
-        console.log("App is loaded; Ready to test.");
         selector.flash( 'yellow', 250 );
     });
 

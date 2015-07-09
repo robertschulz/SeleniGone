@@ -135,7 +135,7 @@ var DUnit = DUnit || {};
             if(callback){callback(DUnit.ajaxStash[endpoint]["postBody"]);}
 
             // dequeue this
-            jQuery(DUnit.ajax_wait_in_prog_func).dequeue("TestQueue");
+            jQuery("body").dequeue("TestQueue");
             DUnit.ajax_wait_in_progress = 0;
 
          }else{
@@ -310,7 +310,7 @@ var DUnit = DUnit || {};
         jQuery("body").dequeue("TestQueue"); //Clean up test queue
     };
 
-
+    console.log("App is loaded; Ready to test.");
 
 }(jQuery));
 
