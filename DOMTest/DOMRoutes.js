@@ -32,7 +32,8 @@ exports.addRoutes = function(app) {
           testHarness["status"] = 'complete';
           res.sendStatus(200);
       }else if(json && json.browser){
-          browsers[json.browser] = 'started';
+          browsers[json.browser] = {};
+          browsers[json.browser]["status"] = 'started';
           res.sendStatus(200);
       }else{
           sleep.sleep(1); //Sleep a second to demo slow ajax
@@ -45,8 +46,11 @@ exports.addRoutes = function(app) {
         var browser = req.query.browser;
         res.setHeader('Content-Type', 'application/json');
         if(browser && browser.match(/\S/)){
-          res.end(JSON.stringify({ "status": browsers[browser.toLowerCase()] }));
+          res.end(JSON.stringify({ "status": browsers[browser.toLowerCase()]["status"],
+                                   "tests":  browsers[browser.toLowerCase()]["tests"]
+                                 }));
         }else{
+          //TODO: only show browsers statuses 
           res.end(JSON.stringify([testHarness, browsers]));
         }
     });
@@ -55,8 +59,9 @@ exports.addRoutes = function(app) {
       var browser_info = uaparser.parse(req.headers['user-agent']);
       var browser = browser_info.family;
       if(browser.match(/ie/i)){ browser = browser + browser_info.major; }
-      browsers[browser.toLowerCase()] = 'finished';
       var json=req.body;
+      browsers[browser.toLowerCase()]["tests"] = json.tests;
+      browsers[browser.toLowerCase()]["status"] = 'finished';
     
       json.browser = browser.toLowerCase();
     

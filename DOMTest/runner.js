@@ -14,6 +14,7 @@ var request    = require('request');
 var launcher   = require( 'browser-launcher2' );
 var os         = require('os');
 var child_proc = require('child_process').execFile; //newer node has better stuff
+var lodash     = require('lodash');
 
 //console.log(argv); //See how to use minimist args
 
@@ -37,16 +38,46 @@ if(argv.help){ //node dom_test_runer --help
 //       For that we should use the wlan0 IP so that
 //       the vBox browser can asscess and post back.
 //=========================================================
-var address = '';
 var interfaces = os.networkInterfaces();
 
-if(interfaces['wlan0']){ 
-   address=interfaces['wlan0'][0]['address']; 
-}else if(interfaces['lo']){
-   address=interfaces['lo'][0]['address'];
-}else{
-   address='localhost';
-}
+//  if(interfaces['wlan0']){ 
+//     address=interfaces['wlan0'][0]['address']; 
+//  }else if(interfaces['lo']){
+//     address=interfaces['lo'][0]['address'];
+//  }else{
+//     address='localhost';
+//  }
+//  var address = '';
+
+var lodash = require("lodash");
+var address =
+   lodash.chain(interfaces).
+   keys().
+   // reject anything that is not eth, wlan, or lo
+   reject(function(value) {
+      return !value.match(/^eth|^wlan|^lo/);
+   }).
+   // sort by interface number
+   sortBy(function(value) {
+      return parseInt(value.match(/[0-9]+/));
+   }).
+   // look at all eth first, then all wlan, then all lo
+   sortBy(function(value) {
+      return value.match(/^eth/) ? 0 :
+         value.match(/^wlan/) ? 1 :
+         value.match(/^lo/) ? 2 : 4;
+   }).
+   // get the addresses for each
+   map(function(value) {
+      return lodash.get(interfaces, value + "[0].address") || null;
+   }).
+   // reject nulls
+   reject(function(value) {
+      return value === null;
+   }).
+   // use the first result or localhost
+   first().
+   value() || 'localhost';
 
 
 var targetURL = argv.targetURL || 'DOMTest';
@@ -130,11 +161,11 @@ function run_them_all(){
 
             request.post(server_url+'/register_browser', {form:{"browser":thisBrowser, "PID":instance.pid}})
 
-            console.log( thisBrowser + ' Instance started with PID:', instance.pid );
+            console.log( '#' + thisBrowser + ' Instance started with PID:', instance.pid );
             instance.on( 'stop', function( code ) {
 
                 var thisBrowser = this.command;
-                console.log( thisBrowser + ' Instance stopped with exit code:', code );
+                console.log('#' + thisBrowser + ' Instance stopped with exit code:', code );
 
                 
                 //Plug for hanging headless browsers after stop
@@ -165,6 +196,17 @@ function run_them_all(){
                         var browser_status = json.status;
                         //console.log(browser +" status is " + browser_status);
                         if (browser_status==='finished'){
+
+                           var testResults = JSON.parse(json.tests);
+                           
+                           var testNum=0;
+                           lodash.forEach(testResults, function(results, testName) {
+                             testNum++;
+                             var tapStatus = results.success ? 'ok' : 'not ok';
+                                 tapStatus +=  ' ' + testNum + ' - ';
+                             console.log(tapStatus + testName);
+                           });
+                           
                            instance.stop();
                         }else{
                            setTimeout(function(){ check_browser(browser); }, 3000);
@@ -239,7 +281,7 @@ function run_next_vm(){
 function start_vm(ie_flavor, browser){
   var vboxHeadless = ''; //default is NOT headless
   
-  console.log("Starting VM "+ie_flavor);
+  console.log("#Starting VM "+ie_flavor);
   request.post(server_url+'/register_browser', {form:{"browser":browser, "PID":"vBox"}})
   if(argv.headless){
     child_proc(vbox_path+'/VBoxManage', ['startvm', ie_flavor, '--type', 'headless'], wait_for_vm_to_boot(ie_flavor, browser));
@@ -256,7 +298,7 @@ function wait_for_vm_to_boot(ie_flavor, browser){
    setTimeout(function(){
       child_proc(vbox_path+'/VBoxManage', ['showvminfo', ie_flavor], function(error,stdout,stderr){
            if(stdout.match(/Additions run level:\s+3/)){
-              console.log("VM has fully booted.")
+              console.log("#VM has fully booted.")
 
               //Set a standard window size
               //VBoxManage controlvm "IE9 - Win7" setvideomodehint 1280 680 32
@@ -268,7 +310,7 @@ function wait_for_vm_to_boot(ie_flavor, browser){
                   open_ie_on_vm(ie_flavor, browser);
               });
            }else{
-              console.log("Waiting for VM to boot.");
+              console.log("#Waiting for VM to boot.");
               setTimeout(wait_for_vm_to_boot(ie_flavor, browser), 3000);
            }
       });
@@ -279,7 +321,7 @@ function wait_for_vm_to_boot(ie_flavor, browser){
 // Load an IE link on that vm
 //=========================================
 function open_ie_on_vm(ie_flavor, browser){
-       console.log("Opening IE on VM.")
+       console.log("#Opening IE on VM.")
        child_proc(vbox_path+'/VBoxManage',
                    ['guestcontrol',
                     ie_flavor,
@@ -301,9 +343,21 @@ function wait_for_post_to_complete(ie_flavor, browser){
         if (!error) {
             var json = JSON.parse(body);
             var browser_status = json.status;
+            
             //console.log(browser +" status is " + browser_status);
             if (browser_status==='finished'){
-                console.log('POST is complete.');
+                console.log('#POST is complete.');
+                
+                var testResults = JSON.parse(json.tests);
+                
+                var testNum=0;
+                lodash.forEach(testResults, function(results, testName) {
+                  testNum++;
+                  var tapStatus = results.success ? 'ok' : 'not ok';
+                      tapStatus +=  ' ' + testNum + ' - ';
+                  console.log(tapStatus + testName);
+                });
+
                 //setTimeout(take_a_screenshot(ie_flavor, browser), 5000);
                 shutdown_vm(ie_flavor, browser);
  
@@ -319,7 +373,7 @@ function wait_for_post_to_complete(ie_flavor, browser){
 // Take a screenshot and then shutdown
 //=========================================
 function take_a_screenshot(ie_flavor, browser){
-  console.log("Taking a Screenshot");
+  console.log("#Taking a Screenshot");
   child_proc(vbox_path+'/VBoxManage', ['controlvm', ie_flavor, 'screenshotpng', './DOMTest/'+ie_flavor+'_screenshot.png'], shutdown_vm(ie_flavor, browser));
 };
 
@@ -328,7 +382,7 @@ function take_a_screenshot(ie_flavor, browser){
 // Shutdown WIN7 or XP
 //=========================================
 function shutdown_vm(ie_flavor, browser){
-       console.log("Shutting Down VM.")
+       console.log("#Shutting Down VM.")
        child_proc(vbox_path+'/VBoxManage',
                    ['guestcontrol',
                     ie_flavor,
@@ -352,11 +406,11 @@ function wait_for_shutdown_to_complete(ie_flavor, browser){
    setTimeout(function(){
       child_proc(vbox_path+'/VBoxManage', ['showvminfo', ie_flavor], function(error,stdout,stderr){
            if(stdout.match(/powered off/)){
-              console.log("VM has powered off.")
+              console.log("#VM has powered off.")
               //process.exit(0);
               run_next_vm()
            }else{
-              console.log("Waiting for VM to shut down.");
+              console.log("#Waiting for VM to shut down.");
               setTimeout(wait_for_shutdown_to_complete(ie_flavor, browser), 3000);
            }
       });
@@ -368,7 +422,7 @@ function wait_for_shutdown_to_complete(ie_flavor, browser){
 
 function end_testHarness(){
    request.post(server_url+'/register_browser', {form:{"testsEnded":true}}, function(){  
-     console.log("All Browser Runs Complete.");
+     console.log("#All Browser Runs Complete.");
      process.exit(0);  
    });
    //process.exit(0);

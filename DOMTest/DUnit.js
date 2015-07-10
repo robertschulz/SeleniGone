@@ -240,7 +240,8 @@ var DUnit = DUnit || {};
                    "status":testStatus,
                    "passed":DUnit.testResults["passed"], 
                    "failed":DUnit.testResults["failed"], 
-                   "total": DUnit.testResults["total"]
+                   "total": DUnit.testResults["total"],
+                   "tests": JSON.stringify(DUnit.testResults["tests"])
             },
             
             success: function(){ 
