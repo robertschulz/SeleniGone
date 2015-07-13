@@ -14,7 +14,7 @@ var request    = require('request');
 var launcher   = require( 'browser-launcher2' );
 var os         = require('os');
 var child_proc = require('child_process').execFile; //newer node has better stuff
-var lodash     = require('lodash');
+var lodash     = require('lodash-node');
 
 //console.log(argv); //See how to use minimist args
 
@@ -49,7 +49,6 @@ var interfaces = os.networkInterfaces();
 //  }
 //  var address = '';
 
-var lodash = require("lodash");
 var address =
    lodash.chain(interfaces).
    keys().
