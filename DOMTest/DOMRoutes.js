@@ -45,9 +45,15 @@ exports.addRoutes = function(app) {
         // NOTE: this is passed in from the DOM Test Runner (as its spawning the browsers)
         var browser = req.query.browser;
         res.setHeader('Content-Type', 'application/json');
-        if(browser && browser.match(/\S/)){
-          res.end(JSON.stringify({ "status": browsers[browser.toLowerCase()]["status"],
-                                   "tests":  browsers[browser.toLowerCase()]["tests"]
+        var browserLC = browser.toLowerCase();
+        if(browser && browser.match(/\S/) && browsers[browserLC]){
+          res.end(JSON.stringify({ "status": browsers[browserLC]["status"],
+                                   "tests":  browsers[browserLC]["tests"]
+                                 }));
+        }
+        else if(browser && browser.match(/\S/) && !browsers[browserLC]){
+           res.end(JSON.stringify({ "status": "not registered",
+                                   "tests": ""
                                  }));
         }else{
           //TODO: only show browsers statuses 
@@ -60,10 +66,14 @@ exports.addRoutes = function(app) {
       var browser = browser_info.family;
       if(browser.match(/ie/i)){ browser = browser + browser_info.major; }
       var json=req.body;
-      browsers[browser.toLowerCase()]["tests"] = json.tests;
-      browsers[browser.toLowerCase()]["status"] = 'finished';
+      var browserLC = browser.toLowerCase();
+
+      //NOTE: currently local browsers dont register_browser()
+      if(!browsers[browserLC]){ browsers[browserLC]={} }
+      browsers[browserLC]["tests"] = json.tests;
+      browsers[browserLC]["status"] = 'finished';
     
-      json.browser = browser.toLowerCase();
+      json.browser = browserLC;
     
       if(json.status==='success'){
         console.log('{ ' + 
