@@ -45,7 +45,10 @@ exports.addRoutes = function(app) {
         // NOTE: this is passed in from the DOM Test Runner (as its spawning the browsers)
         var browser = req.query.browser;
         res.setHeader('Content-Type', 'application/json');
-        var browserLC = browser.toLowerCase();
+
+        var browserLC = '';
+        if(browser){ browserLC = browser.toLowerCase(); }
+
         if(browser && browser.match(/\S/) && browsers[browserLC]){
           res.end(JSON.stringify({ "status": browsers[browserLC]["status"],
                                    "tests":  browsers[browserLC]["tests"]
