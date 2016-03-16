@@ -23,7 +23,7 @@ Use this pattern to ease your UI testing pain.
 
 ### Basic Usage
 
-There are only a few core DUnit functions: 
+**There are only a few core DUnit functions:**
  
 ```javascript
 DUnit.waitFor(jquerySelector, matchPattern, timeout, callback);
@@ -42,7 +42,8 @@ DUnit.done();
 
 ```
 
-ALSO NOTE:
+**NOTE:**
+
 DUnit.test() is usually used within a task.
 
 Tasks should have no internal delays. They should be immediate
@@ -51,7 +52,7 @@ If you need to delay two events, use two separate tasks and a pause between.
 
 In many cases, waitForAjax is vastly superior to a dumb pause
 
-An Example Failing Test, wrapped in a task:
+**An Example Failing Test, wrapped in a task:**
 
 ```javascript
 DUnit.task(function(){
@@ -92,3 +93,10 @@ Or, more simply:
 
 `grunt dom_runner`
 
+### Develop Tests
+
+Whats handy is that you can run these tests directly on the devtools console.
+
+Simply define as many tasks and tests as you like and invoke:
+
+`DUnit.runTasks();`
