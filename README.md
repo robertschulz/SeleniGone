@@ -21,6 +21,43 @@ Use this pattern to ease your UI testing pain.
   
 <br>  
 
+### Basic Usage
+
+There are only a few core DUnit functions: 
+ 
+```javascript
+DUnit.waitFor(jquerySelector, matchPattern, timeout, callback);
+
+DUnit.task(function, postTaskDelay);
+
+DUnit.test(testFunction, testName);
+
+DUnit.waitForAjax(endpointName, timeout, callbackOn(postData));
+
+DUnit.pause(delay);
+
+DUnit.takeScreenshot(domElement);
+
+DUnit.done();
+
+```
+
+ALSO NOTE:
+DUnit.test() is usually used within a task.
+
+Tasks should have no internal delays. They should be immediate
+
+If you need to delay two events, use two separate tasks and a pause between.
+
+In many cases, waitForAjax is vastly superior to a dumb pause
+
+An Example Failing Test, wrapped in a task:
+
+```javascript
+DUnit.task(function(){
+  DUnit.test(true===false, "Truth Test");
+  }, 200);
+```
 
 ### PreRequisites :: Install VirtualBox
 
