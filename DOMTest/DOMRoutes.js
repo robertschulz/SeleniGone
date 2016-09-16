@@ -4,7 +4,7 @@ exports.addRoutes = function(app) {
     var bodyParser     =         require("body-parser");
     var uaparser       =         require('ua-parser');
     var colors         =         require('colors');
-    var sleep          =         require('sleep');
+    var sleep          =         require('system-sleep');
     var fs             =         require('fs');
     var glob           =         require("glob");
     var os             =         require('os');
@@ -36,7 +36,7 @@ exports.addRoutes = function(app) {
           browsers[json.browser]["status"] = 'started';
           res.sendStatus(200);
       }else{
-          sleep.sleep(1); //Sleep a second to demo slow ajax
+          sleep(1*1000); //Sleep a second to demo slow ajax
           res.end(JSON.stringify({"slowly":"butSurely"}));
       }
     });
@@ -161,7 +161,7 @@ exports.addRoutes = function(app) {
     
     app.post('/ajax_test',function(req,res){
       var json=req.body;
-      sleep.sleep(1); //Sleep a second to demo slow ajax
+      sleep(1*1000); //Sleep a second to demo slow ajax
       res.end(JSON.stringify({"slowly":"butSurely"}));
     });
     

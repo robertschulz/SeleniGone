@@ -15,7 +15,7 @@
     "lodash-node": "^3.10.0",
     "minimist": "^1.1.1",
     "request": "^2.55.0",
-    "sleep": "^2.0.0",
+    "system-sleep": "",
     "ua-parser": "^0.3.5"
   },
   "devDependencies": {},
