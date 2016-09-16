@@ -31,9 +31,9 @@
     // Enter some data
     DUnit.task(function(){
         var data = jQuery("#data");
-        data.val('71010');
+        data.val('bar');
         data.flash( 'yellow', 250 );
-        DUnit.test(data.val()==='71010', "Input Code");
+        DUnit.test(data.val()==='bar', "Input Value");
     }, 500);
 
     
@@ -48,7 +48,7 @@
      // Check the copy
     DUnit.task(function(){
         jQuery("#code_name").flash( 'yellow', 250 )
-        DUnit.test(jQuery("#code_name").html()==='71010', "The copy Worked!");
+        DUnit.test(jQuery("#code_name").html()==='bar', "The copy Worked!");
     }, 500);
 
 
