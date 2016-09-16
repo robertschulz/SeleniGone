@@ -82,10 +82,14 @@ These tests can be run headlessly or in full view.
 
 When the tests are complete, follow the link to the resulting snapshots of your application in the various browsers.
 
-While you can easily invoke the DOM testing with the click of a button, you can also run these tests manually (with more options):
+While you can easily invoke the DOM testing with the click of a button, you can also run these tests manually (with more options). 
+
+With the node server running, issue these commands in a separate terminal:
  
 ### Invoke the Tests (i.e. a grunt watch task)
 `node DOMTest/runner --help`
+
+`node DOMTest/runner --specificBrowser chrome`
 
 `node DOMTest/runner --runAllLocal --vboxIE=9,10,11`
 
