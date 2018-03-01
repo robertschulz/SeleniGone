@@ -131,7 +131,7 @@ exports.addRoutes = function(app) {
             var ie_flavor = browser.toUpperCase()+' - Win7'
     
             var vbox_path  = '';
-            if     (os.platform()==='darwin'){ vbox_path  = '/usr/bin';            }
+            if     (os.platform()==='darwin'){ vbox_path  = '/usr/local/bin';      }
             else if(os.platform()==='linux' ){ vbox_path  = '/usr/lib/virtualbox'; }
     
             //call the childproc
