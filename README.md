@@ -76,6 +76,10 @@ sudo apt-get install virtualbox-guest-additions-iso
 
 `node server`
 
+Point a browser at localhost:8080 and you can see a tutorial.
+
+Note, if you use chrome, you may need to use incognito.
+
 With the demo app, you can see examples of how to write DOM tests, and how to easily run them with the click of a button.
 
 These tests can be run headlessly or in full view.
