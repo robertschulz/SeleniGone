@@ -80,12 +80,12 @@ exports.addRoutes = function(app) {
     
       if(json.status==='success'){
         console.log('{ ' + 
-                    colors.bold(json.browser) + ': ' + colors.green.bold("success") +', ' +
+                    colors.blue.bold(json.browser) + ': ' + colors.green.bold("success") +', ' +
                     'passed: ' + json.passed + ', ' +
                     'total: ' + json.total + ' }');
       }else{
         console.log('{ ' + 
-                    colors.bold(json.browser) + ': ' + colors.red.bold("failure") +', '+
+                    colors.blue.bold(json.browser) + ': ' + colors.red.bold("failure") +', '+
                     'failed: ' + json.failed + ', '+
                     'total: ' + json.total + ' }');
     

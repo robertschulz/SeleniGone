@@ -8,16 +8,16 @@ module.exports = function(grunt) {
             src: ['DOMTest/runner.js'],
             options: {
                 // run vbox and nonVbox browsers
-                args: ['--runAllLocal', '--vboxIE=9,10,11', '--headless']
+                //args: ['--runAllLocal', '--vboxIE=9,10,11', '--headless']
 
                 // Run just vBox Browsers
                 //args: ['--vboxIE=9,10,11', '--headless']
 
                 // Run just local Browsers
-                //args: ['--runAllLocal', '--headless']
+                args: ['--runAllLocal', '--headless']
 
                 // Run just local chrome
-                //args: ['--specificBrowser=chrome', '--headless']
+                //args: ['--specificBrowser=firefox', '--headless']
 
                 // Run just IE9 headlessly
                 //args: ['--vboxIE=9', '--headless']
@@ -27,16 +27,16 @@ module.exports = function(grunt) {
             src: ['DOMTest/runner.js'],
             options: {
                 // run vbox and nonVbox browsers
-                args: ['--runAllLocal', '--vboxIE=9,10,11']
+                //args: ['--runAllLocal', '--vboxIE=9,10,11']
 
                 // Run just vBox Browsers
                 //args: ['--vboxIE=9,10,11']
 
                 // Run just local Browsers
-                //args: ['--runAllLocal']
+                args: ['--runAllLocal']
 
                 // Run just local chrome
-                //args: ['--specificBrowser=chrome']
+                //args: ['--specificBrowser=firefox']
 
                 // Run just IE9
                 //args: ['--vboxIE=9']

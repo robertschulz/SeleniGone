@@ -54,7 +54,7 @@ var address =
    keys().
    // reject anything that is not eth, wlan, or lo
    reject(function(value) {
-      return !value.match(/^eth|^wlan|^lo/);
+      return !value.match(/^eth|^wlan|^lo|^en/);
    }).
    // sort by interface number
    sortBy(function(value) {
@@ -64,11 +64,12 @@ var address =
    sortBy(function(value) {
       return value.match(/^eth/) ? 0 :
          value.match(/^wlan/) ? 1 :
-         value.match(/^lo/) ? 2 : 4;
+         value.match(/^en/) ? 2 :
+         value.match(/^lo/) ? 3 : 4;
    }).
    // get the addresses for each
    map(function(value) {
-      return lodash.get(interfaces, value + "[0].address") || null;
+      return lodash.get(interfaces, value + "[1].address") || null;
    }).
    // reject nulls
    reject(function(value) {
@@ -228,7 +229,7 @@ function run_them_all(){
 // Launch any Vbox Browsers (Prototype/Experimental)
 //==========================================================
 var vbox_path  = '';
-if     (os.platform()==='darwin'){     vbox_path  = '/usr/bin'; }
+if     (os.platform()==='darwin'){     vbox_path  = '/usr/local/bin'; }
 else if(os.platform()==='linux' ){ vbox_path  = '/usr/lib/virtualbox'; }
 
 
@@ -310,7 +311,7 @@ function wait_for_vm_to_boot(ie_flavor, browser){
               });
            }else{
               console.log("#Waiting for VM to boot.");
-              setTimeout(wait_for_vm_to_boot(ie_flavor, browser), 3000);
+              setTimeout(function(){wait_for_vm_to_boot(ie_flavor, browser)}, 3000);
            }
       });
    },3000);
@@ -324,12 +325,15 @@ function open_ie_on_vm(ie_flavor, browser){
        child_proc(vbox_path+'/VBoxManage',
                    ['guestcontrol',
                     ie_flavor,
-                    'exec',
+                    'start',
+                    '--exe',
                     'C:\\Progra~1\\Intern~1\\iexplore.exe',
                     '--username',
                     'IEUser',
                     '--password',
                     'Passw0rd!',
+                    '--',
+                    'iexplore',
                     target_url
                    ], wait_for_post_to_complete(ie_flavor, browser));
 }
@@ -385,14 +389,16 @@ function shutdown_vm(ie_flavor, browser){
        child_proc(vbox_path+'/VBoxManage',
                    ['guestcontrol',
                     ie_flavor,
-                    'exec',
-                    '--image',
-                    'shutdown.exe',
+                    'run',
+                    '--exe',
+                    'C:\\Windows\\System32\\shutdown.exe',
                     '--username',
                     'IEUser',
                     '--password',
                     'Passw0rd!',
-                    '/s', '/f', '/t', '0'
+                    '--',
+                    'shutdown.exe',
+                    '-s', '-f', '-t', '0'
                    ], wait_for_shutdown_to_complete(ie_flavor, browser));
 
 }
@@ -410,7 +416,7 @@ function wait_for_shutdown_to_complete(ie_flavor, browser){
               run_next_vm()
            }else{
               console.log("#Waiting for VM to shut down.");
-              setTimeout(wait_for_shutdown_to_complete(ie_flavor, browser), 3000);
+              setTimeout(function(){wait_for_shutdown_to_complete(ie_flavor, browser)}, 3000);
            }
       });
    },3000);
